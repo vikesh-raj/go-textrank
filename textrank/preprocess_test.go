@@ -21,22 +21,6 @@ func TestTokenize(t *testing.T) {
 
 }
 
-func TestSentenceSplit(t *testing.T) {
-	text := `Mr. Smith bought cheapsite.com for 1.5 million dollars, i.e., he paid a lot for it. Did he mind 
-	Adam Jones Jr. thinks 
-	he didn't. In any case, this isn't true... Well, with a probability of .9 it isn't. He lives in U.S.A. as of now.`
-
-	sentences := SplitSentences(text)
-	expected := []string{
-		`Mr. Smith bought cheapsite.com for 1.5 million dollars, i.e., he paid a lot for it.`,
-		"Did he mind Adam Jones Jr. thinks he didn't.",
-		"In any case, this isn't true... Well, with a probability of .9 it isn't.",
-		"He lives in U.S.A. as of now.",
-	}
-
-	assert.Equal(t, expected, sentences)
-}
-
 func TestPreProcessSentence(t *testing.T) {
 
 	table := []struct {

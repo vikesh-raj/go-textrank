@@ -3,12 +3,8 @@ package textrank
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
-
-func Summarize(text string, options Options) ([]ScoreSentence, error) {
-	sentences := SplitSentences(text)
-	return SummarizeSentences(sentences, options)
-}
 
 func SummarizeSentences(sentencetexts []string, options Options) ([]ScoreSentence, error) {
 	sentences := PreProcessSentences(sentencetexts, options.Language, options.AdditionalStopWords)
@@ -23,7 +19,7 @@ func SummarizeSentences(sentencetexts []string, options Options) ([]ScoreSentenc
 		return nil, fmt.Errorf("all the sentences have no relation")
 	}
 
-	scores, err := pageRank(prunedGraph.nodeCount, prunedGraph.edges)
+	scores, err := pageRank(prunedGraph)
 	if err != nil {
 		return nil, err
 	}
@@ -62,6 +58,24 @@ func PickTopSentencesByRatio(scores []ScoreSentence, ratio float64) []string {
 		return scores[i].Index < scores[j].Index
 	})
 	return output
+}
+
+func PickTopSentencesByWordCound(scores []ScoreSentence, wordCount int) []string {
+	sort.Slice(scores, func(i, j int) bool {
+		return scores[i].Score > scores[j].Score
+	})
+
+	currentWordCount := 0
+	sentences := make([]string, 0, 10)
+	for i, score := range scores {
+		numWords := len(strings.Fields(score.Text))
+		if i != 0 && abs(wordCount-currentWordCount-numWords) > abs(wordCount-currentWordCount) {
+			break
+		}
+		sentences = append(sentences, score.Text)
+		currentWordCount += numWords
+	}
+	return sentences
 }
 
 func PickTopSentence(scores []ScoreSentence) string {

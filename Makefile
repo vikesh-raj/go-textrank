@@ -1,4 +1,4 @@
-.PHONY: test bench clean generate-stopwords
+.PHONY: test bench clean generate-stopwords examples
 
 stopwords: ./cmd/stopwords/main.go
 	go build ./cmd/stopwords
@@ -22,3 +22,6 @@ bench:
 
 clean:
 	rm -f *.out coverage.html stopwords
+
+examples:
+	(cd examples && go run main.go)

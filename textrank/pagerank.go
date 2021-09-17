@@ -58,8 +58,8 @@ func buildPageRankMatrix(numNodes int, edges []edge, damping float64) *mat.Dense
 	return &ret
 }
 
-func pageRank(numNodes int, edges []edge) ([]float64, error) {
-	m := buildPageRankMatrix(numNodes, edges, defaultDamping)
+func pageRank(g graph) ([]float64, error) {
+	m := buildPageRankMatrix(g.nodeCount, g.edges, defaultDamping)
 	var eig mat.Eigen
 	ok := eig.Factorize(m, mat.EigenLeft)
 	if !ok {
@@ -68,8 +68,8 @@ func pageRank(numNodes int, edges []edge) ([]float64, error) {
 	var ev mat.CDense
 	eig.LeftVectorsTo(&ev)
 
-	output := make([]float64, numNodes)
-	for i := 0; i < numNodes; i++ {
+	output := make([]float64, g.nodeCount)
+	for i := 0; i < g.nodeCount; i++ {
 		output[i] = cmplx.Abs(ev.At(i, 0))
 	}
 

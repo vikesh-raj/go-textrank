@@ -1,31 +1,15 @@
 package textrank
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 
-	"github.com/neurosnap/sentences"
-	"github.com/neurosnap/sentences/data"
 	"github.com/vikesh-raj/go-textrank/textrank/stopwords"
+	"golang.org/x/text/unicode/norm"
 )
 
-var sentenceTokenizer *sentences.DefaultSentenceTokenizer
-
-func init() {
-	b, _ := data.Asset("data/english.json")
-	training, _ := sentences.LoadTraining(b)
-	sentenceTokenizer = sentences.NewSentenceTokenizer(training)
-}
-
-// SplitSentences splits a text into sentences
-func SplitSentences(text string) []string {
-	sentences := sentenceTokenizer.Tokenize(text)
-	ret := make([]string, len(sentences))
-	for i, sentence := range sentences {
-		ret[i] = charRemover(isNewLine, strings.TrimSpace(sentence.Text), false)
-	}
-	return ret
-}
+var AB_ACRONYM_LETTERS = regexp.MustCompile(`([a-zA-Z])\.([a-zA-Z])\.`)
 
 func PreProcessSentences(sentences []string, language string, additionalStopWords []string) []sentence {
 	output := make([]sentence, 0, len(sentences))
@@ -39,15 +23,19 @@ func PreProcessSentences(sentences []string, language string, additionalStopWord
 	return output
 }
 
-func PreProcessSentence(text string, language string, additionalStopWords []string) sentence {
-	s := sentence{
-		OriginalText: text,
-	}
+func processText(text string) string {
 	text = charRemover(isNewLine, text, false)
 	text = strings.ToLower(text)
 	text = charRemover(isPunc, text, true)
 	text = charRemover(unicode.IsDigit, text, false)
+	return text
+}
 
+func PreProcessSentence(text string, language string, additionalStopWords []string) sentence {
+	s := sentence{
+		OriginalText: text,
+	}
+	text = processText(text)
 	stopwords := stopwords.GetStopWords(language)
 	tokens := strings.Fields(text)
 	if len(stopwords) != 0 {
@@ -85,6 +73,10 @@ func isNewLine(r rune) bool {
 
 func isPunc(r rune) bool {
 	return unicode.IsPunct(r) || unicode.IsSymbol(r)
+}
+
+func isMarkNonSpacing(r rune) bool {
+	return unicode.Is(unicode.Mn, r)
 }
 
 func removeStopwords(tokens, stopwords []string) []string {
@@ -126,4 +118,46 @@ func Contains(s string, a []string) bool {
 		}
 	}
 	return false
+}
+
+func deaccentText(text string) string {
+	text = norm.NFD.String(text)
+	text = charRemover(isMarkNonSpacing, text, false)
+	text = norm.NFC.String(text)
+	return text
+}
+
+func PreProcessWords(text, language string, deaccent bool, additionalStopWords []string) []word {
+	text = removeAcronyms(text)
+	text = strings.ToLower(text)
+	if deaccent {
+		text = deaccentText(text)
+	}
+	originalWords := tokenize(text)
+	stopwords := stopwords.GetStopWords(language)
+	stemmer := getStemmer(language)
+	output := make([]word, 0, len(originalWords))
+
+	for i, w := range originalWords {
+		processed := processText(w)
+		if Contains(processed, stopwords) {
+			continue
+		}
+		if Contains(processed, additionalStopWords) {
+			continue
+		}
+		if stemmer != nil {
+			processed = stemmer(processed, false)
+		}
+		output = append(output, word{
+			Text:  w,
+			Lemma: processed,
+			Index: i,
+		})
+	}
+	return output
+}
+
+func removeAcronyms(text string) string {
+	return AB_ACRONYM_LETTERS.ReplaceAllString(text, "${1}${2}")
 }

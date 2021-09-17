@@ -143,3 +143,24 @@ func TestSummarizationTopSentence(t *testing.T) {
 
 	assert.Equal(t, expectedSummary, summary)
 }
+
+func TestSummarizationWordCound(t *testing.T) {
+	content, err := ioutil.ReadFile("testdata/mihalcea_tarau.txt")
+	require.NoError(t, err)
+	text := string(content)
+
+	sentences := strings.Split(text, "\n")
+	scores, err := SummarizeSentences(sentences, Options{Language: "english"})
+	require.NoError(t, err)
+
+	summarySentences := PickTopSentencesByWordCound(scores, 10)
+	summary := strings.Join(summarySentences, " ")
+	expectedSummary := "Hurricane Gilbert swept toward the Dominican Republic Sunday, and the Civil Defense alerted its heavily populated south coast to prepare for high winds, heavy rains and high seas."
+
+	assert.Equal(t, expectedSummary, summary)
+
+	summarySentences = PickTopSentencesByWordCound(scores, 60)
+	summary = strings.Join(summarySentences, " ")
+	expectedSummary = "Hurricane Gilbert swept toward the Dominican Republic Sunday, and the Civil Defense alerted its heavily populated south coast to prepare for high winds, heavy rains and high seas. The National Hurricane Center in Miami reported its position at 2 a.m. Sunday at latitude 16.1 north, longitude 67.5 west, about 140 miles south of Ponce, Puerto Rico, and 200 miles southeast of Santo Domingo."
+	assert.Equal(t, expectedSummary, summary)
+}
