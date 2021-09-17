@@ -2,7 +2,6 @@ package textrank
 
 import (
 	"testing"
-	"unicode"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -58,8 +57,4 @@ func TestPreProcessSentence(t *testing.T) {
 		s := PreProcessSentence(item.text, "english", []string{"type"})
 		assert.Equal(t, item.expected, s.Text, "input = %s", item.text)
 	}
-}
-
-func TestIsPunctuation(t *testing.T) {
-	assert.True(t, unicode.IsPunct('`'))
 }

@@ -64,7 +64,7 @@ func PickTopSentencesByRatio(scores []ScoreSentence, ratio float64) []string {
 	return output
 }
 
-func PickTopSentence(scores []ScoreSentence, count int) string {
+func PickTopSentence(scores []ScoreSentence) string {
 	max := scores[0].Score
 	maxIndex := 0
 	for i, score := range scores {
