@@ -49,6 +49,9 @@ func PickTopSentencesByRatio(scores []ScoreSentence, ratio float64) []string {
 	if length > len(scores) {
 		length = len(scores)
 	}
+	if length == 0 {
+		length = 1
+	}
 	sort.Slice(scores, func(i, j int) bool {
 		return scores[i].Score > scores[j].Score
 	})

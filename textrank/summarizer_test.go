@@ -27,10 +27,17 @@ func TestSummarization(t *testing.T) {
 		expected  string
 		language  string
 		stopwords []string
+		ratio     float64
 	}{
 		{
 			input:    "testdata/mihalcea_tarau.txt",
 			expected: "testdata/mihalcea_tarau.summ.txt",
+			language: "english",
+		},
+		{
+			input:    "testdata/mihalcea_tarau.txt",
+			expected: "testdata/mihalcea_tarau.top.txt",
+			ratio:    0.02,
 			language: "english",
 		},
 		{
@@ -109,8 +116,11 @@ func TestSummarization(t *testing.T) {
 			assert.NotNil(t, err)
 		} else {
 			require.NoError(t, err)
-
-			top := PickTopSentencesByRatio(scores, 0.2)
+			ratio := item.ratio
+			if ratio == 0.0 {
+				ratio = 0.2
+			}
+			top := PickTopSentencesByRatio(scores, ratio)
 			summary := strings.Join(top, "\n")
 
 			if item.notEmpty {
