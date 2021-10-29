@@ -12,10 +12,3 @@ func getSimilarity(s1, s2 sentence) float64 {
 	}
 	return float64(commonWordCount) / (logS1 + logS2)
 }
-
-func abs(value int) int {
-	if value < 0 {
-		return -value
-	}
-	return value
-}

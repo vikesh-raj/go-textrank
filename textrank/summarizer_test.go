@@ -144,23 +144,29 @@ func TestSummarizationTopSentence(t *testing.T) {
 	assert.Equal(t, expectedSummary, summary)
 }
 
-func TestSummarizationWordCound(t *testing.T) {
+func TestSummarizationWordCount(t *testing.T) {
 	content, err := ioutil.ReadFile("testdata/mihalcea_tarau.txt")
 	require.NoError(t, err)
 	text := string(content)
 
 	sentences := strings.Split(text, "\n")
 	scores, err := SummarizeSentences(sentences, Options{Language: "english"})
+	printScores(scores)
 	require.NoError(t, err)
 
-	summarySentences := PickTopSentencesByWordCound(scores, 10)
+	summarySentences := PickTopSentencesByWordCount(scores, 10)
 	summary := strings.Join(summarySentences, " ")
 	expectedSummary := "Hurricane Gilbert swept toward the Dominican Republic Sunday, and the Civil Defense alerted its heavily populated south coast to prepare for high winds, heavy rains and high seas."
 
 	assert.Equal(t, expectedSummary, summary)
 
-	summarySentences = PickTopSentencesByWordCound(scores, 60)
+	summarySentences = PickTopSentencesByWordCount(scores, 70)
 	summary = strings.Join(summarySentences, " ")
 	expectedSummary = "Hurricane Gilbert swept toward the Dominican Republic Sunday, and the Civil Defense alerted its heavily populated south coast to prepare for high winds, heavy rains and high seas. The National Hurricane Center in Miami reported its position at 2 a.m. Sunday at latitude 16.1 north, longitude 67.5 west, about 140 miles south of Ponce, Puerto Rico, and 200 miles southeast of Santo Domingo."
+	assert.Equal(t, expectedSummary, summary)
+
+	summarySentences = PickTopSentencesByWordCount(scores, 120)
+	summary = strings.Join(summarySentences, " ")
+	expectedSummary = "Hurricane Gilbert swept toward the Dominican Republic Sunday, and the Civil Defense alerted its heavily populated south coast to prepare for high winds, heavy rains and high seas. The National Hurricane Center in Miami reported its position at 2 a.m. Sunday at latitude 16.1 north, longitude 67.5 west, about 140 miles south of Ponce, Puerto Rico, and 200 miles southeast of Santo Domingo. The National Weather Service in San Juan, Puerto Rico, said Gilbert was moving westward at 15 mph with a ``broad area of cloudiness and heavy weather'' rotating around the center of the storm. Strong winds associated with the Gilbert brought coastal flooding, strong southeast winds and up to 12 feet feet to Puerto Rico's south coast."
 	assert.Equal(t, expectedSummary, summary)
 }

@@ -64,21 +64,28 @@ func PickTopSentencesByRatio(scores []ScoreSentence, ratio float64) []string {
 	return output
 }
 
-func PickTopSentencesByWordCound(scores []ScoreSentence, wordCount int) []string {
+func PickTopSentencesByWordCount(scores []ScoreSentence, wordCount int) []string {
 	sort.Slice(scores, func(i, j int) bool {
 		return scores[i].Score > scores[j].Score
 	})
 
 	currentWordCount := 0
 	sentences := make([]string, 0, 10)
+	ids := make([]int, 0, 10)
 	for i, score := range scores {
 		numWords := len(strings.Fields(score.Text))
-		if i != 0 && abs(wordCount-currentWordCount-numWords) > abs(wordCount-currentWordCount) {
+		currentWordCount += numWords
+		if i != 0 && wordCount < currentWordCount {
 			break
 		}
 		sentences = append(sentences, score.Text)
-		currentWordCount += numWords
+		ids = append(ids, score.Index)
 	}
+
+	// Sort the top items by Index again.
+	sort.Slice(sentences, func(i, j int) bool {
+		return ids[i] < ids[j]
+	})
 	return sentences
 }
 
