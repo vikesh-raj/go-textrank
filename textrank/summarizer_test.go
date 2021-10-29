@@ -135,7 +135,7 @@ func TestSummarizationTopSentence(t *testing.T) {
 	text := string(content)
 
 	sentences := strings.Split(text, "\n")
-	scores, err := SummarizeSentences(sentences, Options{Language: "english"})
+	scores, err := SummarizeSentences(sentences, Options{Debug: true, Language: "english"})
 	require.NoError(t, err)
 
 	summary := PickTopSentence(scores)

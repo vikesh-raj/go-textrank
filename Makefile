@@ -1,4 +1,4 @@
-.PHONY: test bench clean generate-stopwords examples
+.PHONY: test bench clean generate-stopwords examples fmt
 
 stopwords: ./cmd/stopwords/main.go
 	go build ./cmd/stopwords
@@ -25,3 +25,6 @@ clean:
 
 examples:
 	(cd examples && go run main.go)
+
+fmt:
+	go fmt ./...

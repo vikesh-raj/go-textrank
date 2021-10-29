@@ -35,6 +35,10 @@ func TestPreProcessSentence(t *testing.T) {
 			text:     "``There is no need for alarm,'' Civil Defense Director Eugenio Cabral said in a television alert shortly before midnight Saturday.",
 			expected: "need alarm civil defens director eugenio cabral said televis alert short midnight saturday",
 		},
+		{
+			text:     "This is my email address: test@abc.co.au, backup email : test@gmail.com",
+			expected: "email address backup email",
+		},
 	}
 
 	for _, item := range table {

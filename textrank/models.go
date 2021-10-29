@@ -1,6 +1,7 @@
 package textrank
 
 type Options struct {
+	Debug               bool
 	Language            string
 	AdditionalStopWords []string
 	DeAccent            bool

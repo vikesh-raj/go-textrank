@@ -10,6 +10,7 @@ import (
 )
 
 var AB_ACRONYM_LETTERS = regexp.MustCompile(`([a-zA-Z])\.([a-zA-Z])\.`)
+var REGEX_EMAIL = regexp.MustCompile("[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*")
 
 func PreProcessSentences(sentences []string, language string, additionalStopWords []string) []sentence {
 	output := make([]sentence, 0, len(sentences))
@@ -35,6 +36,7 @@ func PreProcessSentence(text string, language string, additionalStopWords []stri
 	s := sentence{
 		OriginalText: text,
 	}
+	text = removeEmail(text)
 	text = processText(text)
 	stopwords := stopwords.GetStopWords(language)
 	tokens := strings.Fields(text)
@@ -160,4 +162,8 @@ func PreProcessWords(text, language string, deaccent bool, additionalStopWords [
 
 func removeAcronyms(text string) string {
 	return AB_ACRONYM_LETTERS.ReplaceAllString(text, "${1}${2}")
+}
+
+func removeEmail(text string) string {
+	return REGEX_EMAIL.ReplaceAllString(text, "")
 }

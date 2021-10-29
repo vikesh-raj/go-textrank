@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// Summarization
-	scores, _ := textrank.SummarizeSentences(sentences, textrank.Options{Language: "english"})
+	scores, _ := textrank.SummarizeSentences(sentences, textrank.Options{Debug: true, Language: "english"})
 	top := textrank.PickTopSentencesByRatio(scores, 0.3)
 	summary := strings.Join(top, "\n")
 	fmt.Println("---- Summary ---")

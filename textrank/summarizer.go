@@ -9,6 +9,10 @@ import (
 func SummarizeSentences(sentencetexts []string, options Options) ([]ScoreSentence, error) {
 	sentences := PreProcessSentences(sentencetexts, options.Language, options.AdditionalStopWords)
 
+	if options.Debug {
+		dumpSentences(sentences)
+	}
+
 	g := NewGraphForSentences(sentences)
 	if len(g.edges) == 0 {
 		return nil, fmt.Errorf("all the sentences have no similarity")
@@ -88,4 +92,11 @@ func PickTopSentence(scores []ScoreSentence) string {
 		}
 	}
 	return scores[maxIndex].Text
+}
+
+func dumpSentences(sentences []sentence) {
+	fmt.Println("pre processed sentences = ")
+	for _, sentence := range sentences {
+		fmt.Println(sentence.Index, " ==> ", sentence.Text)
+	}
 }
